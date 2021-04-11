@@ -29,7 +29,7 @@ var uiController = (function () {
         html =
           '<div class="item clearfix" id="expense-%id%"><div class="item__description">%desc%</div><div class="right clearfix"><div class="item__value">%val%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       }
-      //Тэр HTML дотроо орлого зарлагийн утгуудыг REPLACE ашиглан өөрчлөх
+      //Тэр HTML дотроо орлого зарлагийн утгуудыг REPLACE ашиглан өөрчлөх 
       html = html.replace("%id%", item.id);
       html = html.replace("%desc%", item.description);
       html = html.replace("%val%", item.value);
