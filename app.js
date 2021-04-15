@@ -17,6 +17,16 @@ var uiController = (function () {
     getDOMStrings: function () {
       return DOMStrings;
     },
+    clearFields: function() {
+      var fields = document.querySelectorAll(DOMStrings.inputDescription + ", " + DOMStrings.inputValue);
+      //convert List to Array
+      var fieldsArr = Array.prototype.slice.call(fields);
+      fieldsArr.forEach(function(el, index, array){
+        el.value = "";
+      });
+
+      fieldsArr[0].focus();
+    },
     addListItem: function (item, type) {
       //Орлого Зарлагийн элементийг агуулсан HTML-г бэлтгэх
       var html, list;
@@ -53,6 +63,14 @@ var financeController = (function () {
     this.value = value;
   };
 
+  var calculateTotal = function (type) {
+    var sum = 0;
+    data.items[type].forEach(function(el){
+      sum += el.value;
+    });
+    data.totals[type] = sum;
+  };
+
   var data = {
     items: {
       inc: [],
@@ -62,8 +80,30 @@ var financeController = (function () {
       inc: 0,
       exp: 0,
     },
+    tusuv: 0,
+    huvi: 0
   };
   return {
+    calculator: function() {
+      //Нийт орлогын нийлбэрийг бодож олох
+      calculateTotal("inc");
+      //Нийт зарлагын нийлбэрийг бодож олох
+      calculateTotal("exp");
+      //Төсвийг тооцоолох
+      data.tusuv = data.totals.inc - data.totals.exp;
+      //Орлого зарлагын хувийг тооцоолох
+      data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100); 
+    },
+
+    tusuvAvah: function() {
+      return {
+        tusuv: data.tusuv,
+        huvi: data.huvi,
+        totalInc: data.totals.inc,
+        totalExp: data.totals.exp
+      }
+    },
+
     addItem: function (type, desc, val) {
       var item, id;
 
@@ -88,6 +128,7 @@ var appController = (function (uiController, financeController) {
   var ctrlAddItem = function () {
     //1.Оруулах өгөгдлийг дэлгэцээс олж авах.
     var input = uiController.getInput();
+    if(input.description !== "" && input.value !== ""){
     //2.Олж авсан өгөгдлөө санхүүгийн контроллерруу дамжуулах.
     var item = financeController.addItem(
       input.type,
@@ -96,8 +137,14 @@ var appController = (function (uiController, financeController) {
     );
     //3.Олж авсан өгөгдлөө веб дээрээ тохирох хэсэгт нь байрлуулна.
     uiController.addListItem(item, input.type);
+    uiController.clearFields();
     //4.Төсвийг тооцоолно.
+    financeController.calculator();
     //5.Эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргах.
+    var tusuv = financeController.tusuvAvah();
+    //6. Эцсийн төсвийн тооцоог дэлгэцэнд гаргах.
+    console.log(tusuv);
+    }
   };
 
   var setEventListener = function () {
