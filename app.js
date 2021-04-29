@@ -9,6 +9,7 @@ var uiController = (function () {
     totalInc: ".budget__income--value",
     totalExp: ".budget__expenses--value",
     percent: ".budget__expenses--percentage",
+    containerDiv: ".container",
   };
   return {
     getInput: function () {
@@ -41,17 +42,22 @@ var uiController = (function () {
       document.querySelector(DOMStrings.percent).textContent = tusuv.huvi;
     },
 
+    deleteListItem: function (id) {
+      var el = document.getElementById(id);
+      el.parentNode.removeChild(el);
+    },
+
     addListItem: function (item, type) {
       //Орлого Зарлагийн элементийг агуулсан HTML-г бэлтгэх
       var html, list;
       if (type === "inc") {
         list = ".income__list";
         html =
-          '<div class="item clearfix" id="income-%id%"><div class="item__description">%desc%</div><div class="right clearfix"><div class="item__value">%val%</div><div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+          '<div class="item clearfix" id="inc-%id%"><div class="item__description">%desc%</div><div class="right clearfix"><div class="item__value">%val%</div><div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       } else {
         list = ".expenses__list";
         html =
-          '<div class="item clearfix" id="expense-%id%"><div class="item__description">%desc%</div><div class="right clearfix"><div class="item__value">%val%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+          '<div class="item clearfix" id="exp-%id%"><div class="item__description">%desc%</div><div class="right clearfix"><div class="item__value">%val%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
       }
       //Тэр HTML дотроо орлого зарлагийн утгуудыг REPLACE ашиглан өөрчлөх
       html = html.replace("%id%", item.id);
@@ -118,6 +124,15 @@ var financeController = (function () {
       };
     },
 
+    deleteItem: function (type, id) {
+      var ids = data.items[type].map(function (el) {
+        return el.id;
+      });
+
+      var index = ids.indexOf(id);
+      if (index !== -1) data.items[type].slice(index, 1);
+    },
+
     addItem: function (type, desc, val) {
       var item, id;
 
@@ -172,6 +187,22 @@ var appController = (function (uiController, financeController) {
         ctrlAddItem();
       }
     });
+    document
+      .querySelector(DOM.containerDiv)
+      .addEventListener("click", function (e) {
+        var id = e.target.parentNode.parentNode.parentNode.parentNode.id;
+        if (id) {
+          var arr = id.split("-");
+          var type = arr[0];
+          var itemId = parseInt(arr[1]);
+
+          //1 Модулиас устгах
+          financeController.deleteItem(type, itemId);
+          //2 Дэлгэц дээрээс устгах
+          uiController.deleteListItem(id);
+          //3 Тооцоог шинэчилж үзүүлэх
+        }
+      });
   };
 
   return {
