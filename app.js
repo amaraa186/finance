@@ -5,16 +5,11 @@ var uiController = (function () {
     inputDescription: ".add__description",
     inputValue: ".add__value",
     addBtn: ".add__btn",
-<<<<<<< HEAD
-    incTotal: "budget__income--value",
-    expTotal: "budget__expenses--value"
-=======
     totalTusuv: ".budget__value",
     totalInc: ".budget__income--value",
     totalExp: ".budget__expenses--value",
     percent: ".budget__expenses--percentage",
-    containerDiv: ".container",
->>>>>>> 4bc275a5de93444da0671c55090884f4cfe9574f
+    containerDiv: ".container"
   };
   return {
     getInput: function () {
@@ -172,13 +167,18 @@ var appController = (function (uiController, financeController) {
       //3.Олж авсан өгөгдлөө веб дээрээ тохирох хэсэгт нь байрлуулна.
       uiController.addListItem(item, input.type);
       uiController.clearFields();
-      //4.Төсвийг тооцоолно.
-      financeController.calculator();
-      //5.Эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргах.
-      var tusuv = financeController.tusuvAvah();
-      //6. Эцсийн төсвийн тооцоог дэлгэцэнд гаргах.
-      uiController.tusuvUzuuleh(tusuv);
+      //төсвийг шинээр тооцоолоод дэлгэцэнд үзүүлэх
+      updateTusuv();
     }
+  };
+
+  var updateTusuv = function(){
+          //4.Төсвийг тооцоолно.
+          financeController.calculator();
+          //5.Эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргах.
+          var tusuv = financeController.tusuvAvah();
+          //6. Эцсийн төсвийн тооцоог дэлгэцэнд гаргах.
+          uiController.tusuvUzuuleh(tusuv);
   };
 
   var setEventListener = function () {
@@ -206,13 +206,13 @@ var appController = (function (uiController, financeController) {
           //2 Дэлгэц дээрээс устгах
           uiController.deleteListItem(id);
           //3 Тооцоог шинэчилж үзүүлэх
+          updateTusuv();
         }
       });
   };
 
   return {
     init: function () {
-      console.log("Started Program...");
       setEventListener();
     },
   };
