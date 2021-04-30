@@ -5,6 +5,8 @@ var uiController = (function () {
     inputDescription: ".add__description",
     inputValue: ".add__value",
     addBtn: ".add__btn",
+    incTotal: "budget__income--value",
+    expTotal: "budget__expenses--value"
   };
   return {
     getInput: function () {
