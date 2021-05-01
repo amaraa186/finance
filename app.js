@@ -43,18 +43,15 @@ var uiController = (function() {
 
     tusviigUzuuleh: function(tusuv) {
       document.querySelector(DOMstrings.tusuvLabel).textContent = tusuv.tusuv;
-      document.querySelector(DOMstrings.incomeLabel).textContent =
-        tusuv.totalInc;
-      document.querySelector(DOMstrings.expeseLabel).textContent =
-        tusuv.totalExp;
+      document.querySelector(DOMstrings.incomeLabel).textContent = tusuv.totalInc;
+      document.querySelector(DOMstrings.expeseLabel).textContent = tusuv.totalExp;
 
       if (tusuv.huvi !== 0) {
-        document.querySelector(DOMstrings.percentageLabel).textContent =
-          tusuv.huvi + "%";
+        if(tusuv.tusuv > 0) document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi + "%";
+        else document.querySelector(DOMstrings.percentageLabel).textContent = "0%";
       } else {
-        document.querySelector(DOMstrings.percentageLabel).textContent =
-          tusuv.huvi;
-      }
+          document.querySelector(DOMstrings.percentageLabel).textContent = tusuv.huvi;
+      } 
     },
 
     deleteListItem: function(id) {
@@ -95,7 +92,19 @@ var financeController = (function() {
     this.id = id;
     this.description = description;
     this.value = value;
+    this.percentage = -1;
   };
+
+  Expense.prototype.calcPercentage = function(totalIncome){
+    if(totalIncome > 0)
+      this.percentage = Math.round((this.value / totalIncome) * 100);
+    else
+      this.percentage = 0;
+  };
+
+  Expense.prototype.getPercentage = function() {
+    return this.percentage;
+  }
 
   var calculateTotal = function(type) {
     var sum = 0;
@@ -130,8 +139,23 @@ var financeController = (function() {
       calculateTotal("exp");
 
       data.tusuv = data.totals.inc - data.totals.exp;
+      if(data.totals.inc > 0)
+          data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+      else 
+          data.huvi = 0; 
+    },
 
-      data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+    calculatePercentages: function(){
+        var allPercentages = data.items.exp.forEach(function(el){
+          el.calcPercentage(data.totals.inc);
+        });
+        return allPercentages;
+    },
+
+    getPercentages: function(){
+        data.items.exp.map(function(el){
+          return el.getPercentage();
+        })
     },
 
     tusviigAvah: function() {
@@ -204,6 +228,12 @@ var appController = (function(uiController, financeController) {
     var tusuv = financeController.tusviigAvah();
 
     uiController.tusviigUzuuleh(tusuv);
+
+    financeController.calculatePercentages();
+
+    var allPercentages = financeController.getPercentages();
+
+    
   };
 
   var setupEventListeners = function() {
