@@ -18,6 +18,7 @@
   "workbench.editor.highlightModifiedTabs": true,
 
   "files.autoSave": "onFocusChange",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
